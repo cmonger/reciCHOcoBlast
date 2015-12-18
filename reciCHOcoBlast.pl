@@ -127,8 +127,9 @@ open fi, "<$ARGV[11]" or die;
 @ratvscho = <fi>;
 close fi;
 
-##Parsing ids, hits and scores
+##Parsing ids, hits and scores - Human
 
+open( $fo, '>', tempchohuman);
 foreach (@chovshuman)
 {
 $line = $_ ;
@@ -136,13 +137,99 @@ if ($line = /^(\S+)\t(\S+)/)
 	{
 	
 	@split = split /[\|.]/, $2 ; 
-	if (exists $humanids->{$split[3]}->{"genename"} ) {print $1."\t".$split[3]."\t".$humanids->{$split[3]}->{"genename"}."\n"; }
+	if (exists $humanids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$humanids->{$split[3]}->{"genename"}."\tHuman\n"; }
 	
 	}	
 }
+close $fo ;
 
 
+open( $fo, '>', temphumancho);
+foreach (@humanvscho)
+{
+$line = $_ ;
+if ($line = /^(\S+)\t(\S+)/)
+	{
+	
+	@split = split /[\|.]/, $2 ; 
+	if (exists $humanids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$humanids->{$split[3]}->{"genename"}."\tHuman\n"; }
+	
+	}	
+}
+close $fo ;
+
+system ("sort tempchohuman > tempchohuman.sort");
+system ("sort temphumancho >temphumancho.sort");
+system ("comm -12 tempchohuman.sort temphumancho.sort");
 
 
+#Parsing Mouse
 
+open( $fo, '>', tempchomouse);
+foreach (@chovsmouse)
+{
+$line = $_ ;
+if ($line = /^(\S+)\t(\S+)/)
+	{
+	
+	@split = split /[\|.]/, $2 ; 
+	if (exists $mouseids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$mouseids->{$split[3]}->{"genename"}."\tMouse\n"; }
+	
+	}	
+}
+close $fo ;
+
+
+open( $fo, '>', tempmousecho);
+foreach (@mousevscho)
+{
+$line = $_ ;
+if ($line = /^(\S+)\t(\S+)/)
+	{
+	
+	@split = split /[\|.]/, $2 ; 
+	if (exists $mouseids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$mouseids->{$split[3]}->{"genename"}."\tMouse\n"; }
+	
+	}	
+}
+close $fo ;
+
+system ("sort tempchomouse > tempchomouse.sort");
+system ("sort tempmousecho >tempmousecho.sort");
+system ("comm -12 tempchomouse.sort tempmousecho.sort");
+
+#Parsing rat
+
+open( $fo, '>', tempchorat);
+foreach (@chovsrat)
+{
+$line = $_ ;
+if ($line = /^(\S+)\t(\S+)/)
+	{
+	
+	@split = split /[\|.]/, $2 ; 
+	if (exists $ratids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$ratids->{$split[3]}->{"genename"}."\tRat\n"; }
+	
+	}	
+}
+close $fo ;
+
+
+open( $fo, '>', tempratcho);
+foreach (@ratvscho)
+{
+$line = $_ ;
+if ($line = /^(\S+)\t(\S+)/)
+	{
+	
+	@split = split /[\|.]/, $2 ; 
+	if (exists $ratids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$ratids->{$split[3]}->{"genename"}."\tRat\n"; }
+	
+	}	
+}
+close $fo ;
+
+system ("sort tempchorat > tempchorat.sort");
+system ("sort tempratcho >tempratcho.sort");
+system ("comm -12 tempchorat.sort tempratcho.sort");
 
