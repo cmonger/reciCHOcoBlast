@@ -234,3 +234,65 @@ system ("sort tempchorat > tempchorat.sort");
 system ("sort tempratcho >tempratcho.sort");
 system ("comm -12 tempchorat.sort tempratcho.sort > tempratrecihits.txt");
 system ("rm tempchorat tempchorat.sort tempratcho tempratcho.sort");
+
+## Gathering reci blast hits prioritising human>mouse>rat
+
+my $finalReciHits ;
+
+open fi, "<temphumanrecihits.txt" or die;
+@humanrecihits = <fi>;
+close fi;
+
+foreach (@humanrecihits)
+	{
+	if ($line = /^(\S+)\t(\S+)\t(\S+)/)
+		{
+		$finalReciHits->{$1}->{"hit"} = "$2\tSOURCE= $3\n" ;
+		}
+	}
+
+
+
+open fi, "<tempmouserecihits.txt" or die;
+@mouserecihits = <fi>;
+close fi;
+
+foreach (@mouserecihits)
+        {
+        if ($line = /^(\S+)\t(\S+)\t(\S+)/)
+                {
+		if (exists $finalReciHits->{$1}->{"hit"} ) {}
+		else 
+			{
+               		$finalReciHits->{$1}->{"hit"} = "$2\tSOURCE= $3\n" ;
+			}
+                }
+        }
+open fi, "<tempratrecihits.txt" or die;
+@ratrecihits = <fi>;
+close fi;
+
+foreach (@ratrecihits)
+        {
+        if ($line = /^(\S+)\t(\S+)\t(\S+)/)
+                {
+                if (exists $finalReciHits->{$1}->{"hit"} ) {}
+                else
+                        {
+                        $finalReciHits->{$1}->{"hit"} = "$2\tSOURCE= $3\n" ;
+                        }
+                }
+        }
+
+##Printing final results and cleanup
+open( $fo, '>', temprecihits);
+
+foreach $finalrecihits (keys %$finalReciHits)
+	{
+	print $fo $finalrecihits."\t".$finalReciHits->{$finalrecihits}->{"hit"} ;
+	} 
+
+close $fo ;
+
+system ("sort temprecihits >recihits.txt");
+system ("rm temp* ");
