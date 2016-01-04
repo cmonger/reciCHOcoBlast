@@ -10,7 +10,7 @@ use warnings ;
 #e.g:
 # perl ./reciblast.pl Human_Refseq_Ids.txt Human_Refseq_Predicted_Ids.txt Mouse_Refseq_Ids.txt Mouse_Refseq_Predicted_Ids.txt Rat_Refseq_Ids.txt Rat_Refseq_Predicted_Ids.txt trinityhuman_blast_95_ids.txt humantrinity_blast_95_ids.txt trinitymouse_blast_95_ids.txt mousetrinity_blast_95_ids.txt trinityrat_blast_95_ids.txt rattrinity_blast_95_ids.txt
 
-
+#For some reason rat id input is backwards line 85 and 93
 #should probably change inputs to handle text file inputs rather than like 10 file handles
 
 #reading input with #$ARGV[0]..[11]
@@ -82,7 +82,7 @@ foreach (@biomartratrefseqids)
 {
 if ($_ = /^(\S+)\t(\S+)$/  )
 	{
-	$ratids->{$1}->{"genename"}= $2;
+	$ratids->{$2}->{"genename"}= $1;
 	}
 }
 
@@ -90,7 +90,7 @@ foreach (@biomartratrefseqpredictedids)
 {
 if ($_ = /^(\S+)\t(\S+)$/  )
 	{
-	$ratids->{$1}->{"genename"}= $2;
+	$ratids->{$2}->{"genename"}= $1;
 	}
 }
 
@@ -160,8 +160,8 @@ close $fo ;
 
 system ("sort tempchohuman > tempchohuman.sort");
 system ("sort temphumancho >temphumancho.sort");
-system ("comm -12 tempchohuman.sort temphumancho.sort");
-
+system ("comm -12 tempchohuman.sort temphumancho.sort > temphumanrecihits.txt");
+system ("rm tempchohuman tempchohuman.sort temphumancho temphumancho.sort");
 
 #Parsing Mouse
 
@@ -187,8 +187,8 @@ $line = $_ ;
 if ($line = /^(\S+)\t(\S+)/)
 	{
 	
-	@split = split /[\|.]/, $2 ; 
-	if (exists $mouseids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$mouseids->{$split[3]}->{"genename"}."\tMouse\n"; }
+	@split = split /[\|.]/, $1 ; 
+	if (exists $mouseids->{$split[3]}->{"genename"} ) {print $fo $2."\t".$mouseids->{$split[3]}->{"genename"}."\tMouse\n"; }
 	
 	}	
 }
@@ -196,7 +196,8 @@ close $fo ;
 
 system ("sort tempchomouse > tempchomouse.sort");
 system ("sort tempmousecho >tempmousecho.sort");
-system ("comm -12 tempchomouse.sort tempmousecho.sort");
+system ("comm -12 tempchomouse.sort tempmousecho.sort > tempmouserecihits.txt");
+system ("rm tempchomouse tempchomouse.sort tempmousecho tempmousecho.sort") ;
 
 #Parsing rat
 
@@ -207,7 +208,7 @@ $line = $_ ;
 if ($line = /^(\S+)\t(\S+)/)
 	{
 	
-	@split = split /[\|.]/, $2 ; 
+	@split = split /[\|.]/, $2;
 	if (exists $ratids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$ratids->{$split[3]}->{"genename"}."\tRat\n"; }
 	
 	}	
@@ -222,8 +223,8 @@ $line = $_ ;
 if ($line = /^(\S+)\t(\S+)/)
 	{
 	
-	@split = split /[\|.]/, $2 ; 
-	if (exists $ratids->{$split[3]}->{"genename"} ) {print $fo $1."\t".$ratids->{$split[3]}->{"genename"}."\tRat\n"; }
+	@split = split /[\|.]/, $1 ; 
+	if (exists $ratids->{$split[3]}->{"genename"} ) {print $fo $2."\t".$ratids->{$split[3]}->{"genename"}."\tRat\n"; }
 	
 	}	
 }
@@ -231,5 +232,5 @@ close $fo ;
 
 system ("sort tempchorat > tempchorat.sort");
 system ("sort tempratcho >tempratcho.sort");
-system ("comm -12 tempchorat.sort tempratcho.sort");
-
+system ("comm -12 tempchorat.sort tempratcho.sort > tempratrecihits.txt");
+system ("rm tempchorat tempchorat.sort tempratcho tempratcho.sort");
