@@ -8,11 +8,11 @@
 
 ##Usage
 1) Blast search trinity assembly against each database with outfmt6 <br>
-2) Extract subject and query with awk <br>
+2) Extract subject and query above threshold (95%) with awk <br>
 3) Use bbtools to extract subject transcripts from refeq files <br>
 4) Create BLASTDB index of trinity assembly <br>
 5) Blast back the transcripts <br>
-6) Extract subject and query with awk <br>
+6) Extract subject and query above threshold (95%) with awk <br>
 7) Use reciCHOcoBlast.pl to find reciprocal hits <br>
 
 E.G. <br>
