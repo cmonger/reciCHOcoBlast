@@ -1,14 +1,13 @@
 #!/usr/bin/perl
-use warnings ;
 
 #Script for gathering the results of a reciprical blast 
 #configured for CHO vs human>mouse>rat
 #Requires input ids in sorted form. Pipeline in README.txt
 
 #usage:
-# reciblast.pl biomarthumanrefseqids biomarthumanrefseqpredictedids biomartmouserefseqids biomartmouserefseqpredictedids biomartratrefseqids biomartratrefseqpredictedids chovshuman humanvscho chovsmouse mousevscho chovsrat ratvscho > rbh.tsv
+# reciCHOcoBlast.pl biomarthumanrefseqids biomarthumanrefseqpredictedids biomartmouserefseqids biomartmouserefseqpredictedids biomartratrefseqids biomartratrefseqpredictedids chovshuman humanvscho chovsmouse mousevscho chovsrat ratvscho > rbh.tsv
 #e.g:
-# perl ./reciblast.pl Human_Refseq_Ids.txt Human_Refseq_Predicted_Ids.txt Mouse_Refseq_Ids.txt Mouse_Refseq_Predicted_Ids.txt Rat_Refseq_Ids.txt Rat_Refseq_Predicted_Ids.txt trinityhuman_blast_95_ids.txt humantrinity_blast_95_ids.txt trinitymouse_blast_95_ids.txt mousetrinity_blast_95_ids.txt trinityrat_blast_95_ids.txt rattrinity_blast_95_ids.txt
+# perl ./reciCHOcoBlast.pl Human_Refseq_Ids.txt Human_Refseq_Predicted_Ids.txt Mouse_Refseq_Ids.txt Mouse_Refseq_Predicted_Ids.txt Rat_Refseq_Ids.txt Rat_Refseq_Predicted_Ids.txt trinityhuman_blast_95_ids.txt humantrinity_blast_95_ids.txt trinitymouse_blast_95_ids.txt mousetrinity_blast_95_ids.txt trinityrat_blast_95_ids.txt rattrinity_blast_95_ids.txt
 
 #For some reason rat id input is backwards line 85 and 93
 #should probably change inputs to handle text file inputs rather than like 10 file handles
@@ -243,11 +242,15 @@ open fi, "<temphumanrecihits.txt" or die;
 @humanrecihits = <fi>;
 close fi;
 
+open ($fo,'>', "recihitids");
+
+
 foreach (@humanrecihits)
 	{
 	if ($line = /^(\S+)\t(\S+)\t(\S+)/)
 		{
 		$finalReciHits->{$1}->{"hit"} = "$2\tSOURCE= $3\n" ;
+		print $fo "$1\t$2\t$3\n";
 		}
 	}
 
@@ -265,6 +268,7 @@ foreach (@mouserecihits)
 		else 
 			{
                		$finalReciHits->{$1}->{"hit"} = "$2\tSOURCE= $3\n" ;
+			print $fo "$1\t$2\t$3\n";
 			}
                 }
         }
@@ -280,9 +284,15 @@ foreach (@ratrecihits)
                 else
                         {
                         $finalReciHits->{$1}->{"hit"} = "$2\tSOURCE= $3\n" ;
-                        }
+                        print $fo "$1\t$2\t$3\n";
+			}
                 }
         }
+
+close $fo ;
+system ("sort recihitids > recihitids.tsv");
+system ("rm recihitids");
+
 
 ##Printing final results and cleanup
 open( $fo, '>', temprecihits);
@@ -293,6 +303,8 @@ foreach $finalrecihits (keys %$finalReciHits)
 	} 
 
 close $fo ;
+
+
 
 system ("sort temprecihits >recihits.txt");
 system ("rm temp* ");
